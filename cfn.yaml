@@ -7,7 +7,7 @@ Parameters:
     Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
     Default: '/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.1-x86_64'
 
-    keyName:
+  keyName:
       Description: key pair
       Type: AWS::EC2::KeyPair::KeyName
       Default: firstkey
@@ -26,19 +26,16 @@ Resources:
         - Key: Name
           Value: !Sub Web Server of ${AWS::StackName} Stack
       UserData: !Base64 |
-        #!/bin/bash 
+        #! /bin/bash 
         yum update -y
         yum install python3 -y
+        yum install python3-pip -y
         pip3 install flask
+        yum install git -y
         cd /home/ec2-user
-        wget https://raw.githubusercontent.com/sezzgi/romanconv/main/templates/index.html
-        Project-001-Roman-Numerals-Converter/app.py
-        mkdir templates
-        cd templates
-        wget https://raw.githubusercontent.com/sezzgi/romanconv/main/templates/index.html Project-001-Roman-Numerals-Converter/templates/index.html
-        wget https://raw.githubusercontent.com/sezzgi/romanconv/main/templates/index.html
-        Project-001-Roman-Numerals-Converter/templates/result.html
-        cd ..
+        wget -P templates https://raw.githubusercontent.com/sezzgi/romanconv/main/templates/index.html
+        wget -P templates https://raw.githubusercontent.com/sezzgi/romanconv/main/templates/index.html
+        wget https://raw.githubusercontent.com/sezzgi/romanconv/main/roman-numerals-converter-app.py
         python3 app.py 
       
   mySecGrp:
@@ -65,6 +62,6 @@ Resources:
 Outputs:
   WebsiteURL:
     Value: !Sub
-      - http://${PublicAddress}
-      - PublicAddress: !GetAtt myWebServer.PublicDnsName
+      - http://${PIA}
+      - PIA: !GetAtt myWebServer.PublicDnsName
     Description: Roman Numerals Converter Application URL 
