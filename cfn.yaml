@@ -4,14 +4,13 @@ Description: |
   CFN temp is for the roman conv
 
 Parameters:
-  latestAmiId:
-    Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
-    Default: '/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.1-x86_64'
+  myVPC:
+    Description: choose your VPC
+    Type: AWS::EC2::VPC::Id
 
-  keyName:
+  myKeyPair:
     Description: choose your key pair
     Type: AWS::EC2::KeyPair::KeyName
-    Default: firstkey
 
 Resources:
   myWebServer:
@@ -19,7 +18,7 @@ Resources:
     Properties:
       ImageId: !Ref latestAmiId
       InstanceType: t2.micro
-      KeyName: !Ref keyName
+      KeyName: !Ref myKeyPair
       SecurityGroupIds: 
         - !Ref mySecGrp
       Tags: 
@@ -27,14 +26,16 @@ Resources:
           Value: !Sub Web Server of ${AWS::StackName} Stack
       UserData: !Base64 |
         #! /bin/bash 
-        yum update -y
-        yum install python3 -y
-        yum install python3-pip -y
+        dnf update -y
+        dnf install python3 -y
+        dnf install python3-pip -y
+        dnf install git -y
         pip3 install flask
         cd /home/ec2-user
-        wget -P templates https://raw.githubusercontent.com/sezzgi/romanconv/main/templates/index.html
-        wget -P templates https://raw.githubusercontent.com/sezzgi/romanconv/main/templates/result.html
-        wget https://raw.githubusercontent.com/sezzgi/romanconv/main/roman-numerals-converter-app.py
+        FOLDER="https://raw.githubusercontent.com/sezzgi/romanconv/main/"
+        wget -P templates ${FOLDER}/templates/index.html
+        wget -P templates ${FOLDER}/templates/result.html
+        wget ${FOLDER}/roman-numerals-converter-app.py
         python3 app.py 
 
   mySecGrp:
@@ -55,7 +56,34 @@ Resources:
           FromPort: 8080
           ToPort: 8080
           CidrIp: 0.0.0.0/0
-    
+      Parameters:
+  myVPC:
+    Description: choose your VPC
+    Type: AWS::EC2::VPC::Id
+
+Resources:
+
+  webServerSecGrp:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allows ssh, http and 8080 # Required
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: 0.0.0.0/0
+      Tags: 
+        - Key: Name
+          Value: sez-roman-number-conventor
+      VpcId: !Ref myVPC
   
 Outputs:
   WebsiteURL:
