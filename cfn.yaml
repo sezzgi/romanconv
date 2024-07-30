@@ -1,6 +1,7 @@
 AWSTemplateFormatVersion: 2010-09-09
+
 Description: |
-  CFN temp is for the romanconv
+  CFN temp is for the roman conv
 
 Parameters:
   latestAmiId:
@@ -8,10 +9,9 @@ Parameters:
     Default: '/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.1-x86_64'
 
   keyName:
-      Description: key pair
-      Type: AWS::EC2::KeyPair::KeyName
-      Default: firstkey
-
+    Description: choose your key pair
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: firstkey
 
 Resources:
   myWebServer:
@@ -31,19 +31,17 @@ Resources:
         yum install python3 -y
         yum install python3-pip -y
         pip3 install flask
-        yum install git -y
         cd /home/ec2-user
         wget -P templates https://raw.githubusercontent.com/sezzgi/romanconv/main/templates/index.html
         wget -P templates https://raw.githubusercontent.com/sezzgi/romanconv/main/templates/index.html
         wget https://raw.githubusercontent.com/sezzgi/romanconv/main/roman-numerals-converter-app.py
         python3 app.py 
-      
+
   mySecGrp:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: sshport
+      GroupDescription: ssh port
       GroupName: sezsecgrpromen
-    
       SecurityGroupIngress: 
         - IpProtocol: tcp
           FromPort: 80
