@@ -32,7 +32,7 @@ Resources:
         yum install python3-pip -y
         pip3 install flask
         cd /home/ec2-user
-        wget -P templates https://raw.githubusercontent.com/sezzgi/romanconv/main/templates/index.html"
+        wget -P templates https://raw.githubusercontent.com/sezzgi/romanconv/main/templates/index.html
         wget -P templates https://raw.githubusercontent.com/sezzgi/romanconv/main/templates/result.html
         wget https://raw.githubusercontent.com/sezzgi/romanconv/main/roman-numerals-converter-app.py
         python3 app.py 
